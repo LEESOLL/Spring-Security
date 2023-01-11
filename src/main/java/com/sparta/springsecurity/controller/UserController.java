@@ -39,7 +39,7 @@ public class UserController {
     public String signup(SignupRequestDto signupRequestDto) {
 
         String username = signupRequestDto.getUsername();
-        String password = passwordEncoder.encode(signupRequestDto.getPassword());
+        String password = passwordEncoder.encode(signupRequestDto.getPassword()); //암호화 해서 비밀번호 가져오기
 
         //회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
@@ -63,7 +63,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@AuthenticationPrincipal UserDetails userDetails) {
+    public String login(@AuthenticationPrincipal UserDetails userDetails) { //@AuthenticationPrincipal : Authentication 의 principal 부분을 가져온다
         System.out.println("*********************************************************");
         System.out.println("UserController.login");
         System.out.println("userDetails.getUsername() = " + userDetails.getUsername());

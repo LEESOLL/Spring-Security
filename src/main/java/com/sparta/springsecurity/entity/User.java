@@ -14,7 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true) // 필드 값이 null 이 되면 안되고, 필드 값의 중복을 허용하지 않는다.
     private String username;
 
     @Column(nullable = false)

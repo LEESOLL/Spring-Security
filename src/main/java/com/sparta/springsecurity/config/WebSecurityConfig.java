@@ -1,6 +1,7 @@
 package com.sparta.springsecurity.config;
 
-
+import com.sparta.springsecurity.security.CustomAccessDeniedHandler;
+import com.sparta.springsecurity.security.CustomAuthenticationEntryPoint;
 import com.sparta.springsecurity.security.CustomSecurityFilter;
 import com.sparta.springsecurity.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(securedEnabled = true) //@Secured 어노테이션 활성화
 public class WebSecurityConfig {
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final UserDetailsServiceImpl userDetailsService;
 
     @Bean // 비밀번호 암호화 기능 등록
@@ -32,7 +35,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() { //아래 securityFilterChain 보다 더 우선적으로 걸리는 설정
         // h2-console 사용 및 resources 접근 허용 설정
-        return (web) -> web.ignoring() // 밑의 h2 콘솔 관련, static resources 로 들어오는 애들은 인증을 무시하겠다 그런뜻..?
+        return (web) -> web.ignoring() // 밑의 h2 콘솔 관련, static resources 로 들어오는 애들은 인증을 무시하겠다
                 .requestMatchers(PathRequest.toH2Console())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
@@ -50,6 +53,15 @@ public class WebSecurityConfig {
 
         // Custom Filter 등록하기
         http.addFilterBefore(new CustomSecurityFilter(userDetailsService, passwordEncoder()), UsernamePasswordAuthenticationFilter.class);
+
+        // 접근 제한 페이지 이동 설정
+        // http.exceptionHandling().accessDeniedPage("/api/user/forbidden");
+
+        // 401 Error 처리, Authorization 즉, 인증과정에서 실패할 시 처리
+        http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
+
+        // 403 Error 처리, 인증과는 별개로 추가적인 권한이 충족되지 않는 경우
+        http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
 
         return http.build();
     }

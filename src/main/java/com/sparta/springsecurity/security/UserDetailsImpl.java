@@ -27,10 +27,10 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        UserRoleEnum role = user.getRole(); //user의 권한을 가져와서
-        String authority = role.getAuthority(); //string 값으로 바꿔줌
+        UserRoleEnum role = user.getRole(); //사용자의 권한을 가져와서
+        String authority = role.getAuthority();
 
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority); // GrantedAuthority 로 추상화 해서 사용
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(simpleGrantedAuthority);
 
